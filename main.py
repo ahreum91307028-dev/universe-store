@@ -105,7 +105,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# 다크모드 쇼핑몰 스타일
 st.markdown("""
 <style>
     .product-card {
@@ -129,12 +128,6 @@ st.markdown("""
         border-radius: 10px;
         margin: 20px 0;
     }
-    .delivery-status {
-        background: #0f3460;
-        padding: 15px;
-        border-radius: 10px;
-        border-left: 5px solid #00d9ff;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -144,7 +137,6 @@ st.markdown("""
 if 'page' not in st.session_state:
     st.session_state.page = 'home'
 
-# 사이드바 메뉴
 st.sidebar.title("🌌 Universe Store")
 menu = st.sidebar.radio("메뉴", ["🏠 홈", "🛒 주문하기", "📦 주문내역", "ℹ️ 이용안내"])
 
@@ -169,7 +161,6 @@ if st.session_state.page == 'home':
     st.markdown("---")
     st.subheader("🔥 베스트셀러 Top 5")
     
-    # 3열 레이아웃으로 상품 표시
     cols = st.columns(3)
     for idx, (product, info) in enumerate(list(CATALOG.items())[:5]):
         with cols[idx % 3]:
@@ -192,7 +183,6 @@ if st.session_state.page == 'home':
 elif st.session_state.page == 'order':
     st.title("🛒 주문하기")
     
-    # 상품 선택
     st.subheader("1️⃣ 상품 선택")
     selected_product = st.selectbox(
         "원하는 상품을 선택하세요",
@@ -200,7 +190,6 @@ elif st.session_state.page == 'order':
         format_func=lambda x: f"{CATALOG[x]['emoji']} {x}"
     )
     
-    # 커스텀 입력
     if "직접 입력" in selected_product:
         desired_item = st.text_input("🎯 원하는 것을 구체적으로 입력하세요", 
                                      placeholder="예: 안정적인 부업으로 월 500만원")
@@ -209,7 +198,6 @@ elif st.session_state.page == 'order':
     
     st.markdown("---")
     
-    # 배송지 정보
     st.subheader("2️⃣ 배송 정보")
     col1, col2 = st.columns(2)
     with col1:
@@ -221,12 +209,10 @@ elif st.session_state.page == 'order':
     
     st.markdown("---")
     
-    # 결제 정보
     st.subheader("3️⃣ 결제 정보")
     payment_method = st.selectbox("💳 결제 수단", 
                                   ["Universe Card (NH 연동)", "믿음 포인트", "확신 자동이체"])
     
-    # 가짜 카드 입력 (실제로는 사용 안 함)
     with st.expander("💳 카드 정보 입력 (보안 연결됨 🔒)"):
         card_num = st.text_input("카드 번호", placeholder="1234-5678-9012-3456", max_chars=19)
         col1, col2 = st.columns(2)
@@ -240,7 +226,6 @@ elif st.session_state.page == 'order':
     
     st.warning("⚠️ 이 주문은 취소할 수 없으며, 우주 법칙에 따라 반드시 배송됩니다.")
     
-    # 주문하기 버튼
     st.markdown("---")
     agree = st.checkbox("위 내용을 확인했으며, 우주의 배송을 신뢰합니다 ✨")
     
@@ -248,34 +233,30 @@ elif st.session_state.page == 'order':
         if not desired_item or not address:
             st.error("❌ 상품명과 배송지를 모두 입력해주세요!")
         else:
-            # 결제 프로세스 시뮬레이션
             status_container = st.empty()
             progress_bar = st.progress(0)
             
-    steps = [
-        ("💳 카드 정보 확인 중...", 15),
-        ("🏦 결제 승인 요청 중...", 30),
-        ("✅ 결제 승인 완료", 50),
-        ("🌌 우주 재고 확인 중...", 70),
-        ("📦 상품 포장 중...", 85),
-        ("🚀 우주 배송 시작...", 100),
-    ]
-
-    for step, progress in steps:
-        status_container.info(step)
-        progress_bar.progress(progress)
-        time.sleep(1)
+            steps = [
+                ("💳 카드 정보 확인 중...", 15),
+                ("🏦 결제 승인 요청 중...", 30),
+                ("✅ 결제 승인 완료", 50),
+                ("🌌 우주 재고 확인 중...", 70),
+                ("📦 상품 포장 중...", 85),
+                ("🚀 우주 배송 시작...", 100),
+            ]
             
-            # 5% 확률로 "재시도" 드라마 연출
+            for step, progress in steps:
+                status_container.info(step)
+                progress_bar.progress(progress)
+                time.sleep(1)
+            
             if random.random() < 0.05:
                 status_container.error("⚠️ 일시적 오류 발생. 재시도 중...")
                 time.sleep(2)
                 status_container.success("✅ 재시도 성공!")
             
-            # 주문번호 생성
             order_num = f"UNIVERSE-{int(time.time())}"
             
-            # 주문 완료
             st.balloons()
             st.success("🎉 주문이 성공적으로 완료되었습니다!")
             
@@ -315,7 +296,6 @@ elif st.session_state.page == 'order':
             st.info("💌 잠시 후 텔레그램으로 영수증이 발송됩니다.")
             st.markdown("**💡 Tip:** 이제 주문을 잊고 일상을 즐기세요. 배송은 자동으로 완료됩니다.")
             
-            # 주문 저장
             order_data = {
                 "order_num": order_num,
                 "item": desired_item,
@@ -327,7 +307,6 @@ elif st.session_state.page == 'order':
             }
             save_order(order_data)
             
-            # 텔레그램 발송
             try:
                 send_telegram_msg(desired_item, address, price_display, order_num)
             except Exception as e:
@@ -347,7 +326,7 @@ elif st.session_state.page == 'history':
         st.markdown(f"**총 {len(orders)}개의 주문**")
         st.markdown("---")
         
-        for order in reversed(orders):  # 최신 주문부터
+        for order in reversed(orders):
             with st.container():
                 col1, col2, col3 = st.columns([3, 2, 1])
                 
@@ -387,14 +366,6 @@ elif st.session_state.page == 'info':
     
     ---
     
-    ## 💳 결제 방식
-    
-    - **Universe Card:** 믿음을 담보로 한 무한 신용
-    - **믿음 포인트:** 누적된 확신의 에너지
-    - **확신 자동이체:** 매 순간 자동 충전
-    
-    ---
-    
     ## 🚀 배송 정책
     
     - **배송 기간:** 이미 도착함 (시공간 초월)
@@ -404,32 +375,9 @@ elif st.session_state.page == 'info':
     
     ---
     
-    ## ❓ 자주 묻는 질문
-    
-    **Q. 언제 받을 수 있나요?**
-    A. 이미 당신의 것입니다. 현실화 타이밍은 우주가 결정합니다.
-    
-    **Q. 배송비가 있나요?**
-    A. 우주 무료배송입니다.
-    
-    **Q. 주문 취소가 가능한가요?**
-    A. 불가능합니다. 주문 즉시 배송이 시작됩니다.
-    
-    ---
-    
-    ## 📞 고객센터
-    
-    - **텔레그램:** @universe_store (자동 응답)
-    - **우주 콜센터:** 내면의 직관에 문의하세요
-    
-    ---
-    
     *"It is done. 이미 당신의 것입니다."*
     """)
 
-# ==========================================
-# 사이드바 추가 정보
-# ==========================================
 st.sidebar.markdown("---")
 st.sidebar.info("""
 💫 **Today's Quote**
