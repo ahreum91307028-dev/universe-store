@@ -9,8 +9,8 @@ import os
 # ==========================================
 # 사용자 설정
 # ==========================================
-TELEGRAM_TOKEN = "7858493339:AAGRpy3vGha1OcvjAcN94krkn80BcDVGNow"
-CHAT_ID = "7565508393"
+TELEGRAM_TOKEN = st.secrets["TELEGRAM_TOKEN"]
+CHAT_ID = st.secrets["CHAT_ID"]
 ORDERS_FILE = "orders_history.json"
 
 # ==========================================
