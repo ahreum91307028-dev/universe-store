@@ -252,20 +252,19 @@ elif st.session_state.page == 'order':
             status_container = st.empty()
             progress_bar = st.progress(0)
             
-            steps = [
-                ("💳 카드 정보 확인 중...", 15),
-                ("🏦 결제 승인 요청 중...", 30),
-                ("✅ 결제 승인 완료", 50),
-                ("🌌 우주 재고 확인 중...", 70),
-                ("📦 상품 포장 중...", 85),
-                ("🚀 우주 배송 시작...", 100),
-            ]
-            
-            for step, progress in steps:
-                status_container.info(step)
-                for i in range(progress_bar._value, progress + 1):
-                    time.sleep(0.03)
-                    progress_bar.progress(i)
+    steps = [
+        ("💳 카드 정보 확인 중...", 15),
+        ("🏦 결제 승인 요청 중...", 30),
+        ("✅ 결제 승인 완료", 50),
+        ("🌌 우주 재고 확인 중...", 70),
+        ("📦 상품 포장 중...", 85),
+        ("🚀 우주 배송 시작...", 100),
+    ]
+
+    for step, progress in steps:
+        status_container.info(step)
+        progress_bar.progress(progress)
+        time.sleep(1)
             
             # 5% 확률로 "재시도" 드라마 연출
             if random.random() < 0.05:
