@@ -127,6 +127,32 @@ st.set_page_config(
 
 st.markdown("""
 <style>
+    /* 우주 배경 이미지 */
+    .stApp {
+        background-image: url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+    
+    /* 가독성을 위한 반투명 오버레이 */
+    .stApp::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 0;
+    }
+    
+    /* 모든 콘텐츠를 오버레이 위로 */
+    .main > div {
+        position: relative;
+        z-index: 1;
+    }
+    
     .product-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 12px;
@@ -135,6 +161,9 @@ st.markdown("""
         box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         transition: transform 0.3s;
     }
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
     .product-card h3 {
         font-size: 1.1rem;
         margin-bottom: 8px;
@@ -142,9 +171,6 @@ st.markdown("""
     .product-card p {
         font-size: 0.85rem;
         margin: 4px 0;
-    }
-    .product-card:hover {
-        transform: translateY(-5px);
     }
     .order-number {
         font-size: 24px;
@@ -220,7 +246,7 @@ elif st.session_state.page == 'order':
     
     if "직접 입력" in selected_product:
         desired_item = st.text_input("🎯 원하는 것을 구체적으로 입력하세요", 
-                                     placeholder="예: 해외선물로 월 15만불")
+                                     placeholder="예: 사랑과 감사")
     else:
         desired_item = selected_product
     
@@ -233,7 +259,7 @@ elif st.session_state.page == 'order':
                                placeholder="지금의 나, 2026년의 나")
     with col2:
         receiver_state = st.selectbox("💫 현재 마음 상태", 
-                                     ["이미 받은 안도감", "감사하는 마음", "평온한 확신"])
+                                     ["이미 받은 안도감", "감사하는 마음", "이미 완료", "평온한 확신"])
     
     st.markdown("---")
     
@@ -250,7 +276,7 @@ elif st.session_state.page == 'order':
             cvv = st.text_input("CVV", type="password", placeholder="***", max_chars=3)
     
     price_display = CATALOG[selected_product]['price'] if "직접 입력" not in selected_product else "이미 완료"
-    st.info(f"💰 **결제 금액:** {price_display} (이미 지불됨)")
+    st.info(f"💰 **결제 금액:** {price_display}")
     
     st.warning("⚠️ 이 주문은 취소할 수 없으며, 우주 법칙에 따라 반드시 배송됩니다.")
     
@@ -265,18 +291,18 @@ elif st.session_state.page == 'order':
             progress_bar = st.progress(0)
             
             steps = [
-                ("💳 카드 정보 확인 중...", 15),
-                ("🏦 결제 승인 요청 중...", 30),
-                ("✅ 결제 승인 완료", 50),
-                ("🌌 우주 재고 확인 중...", 70),
-                ("📦 상품 포장 중...", 85),
-                ("🚀 우주 배송 시작...", 100),
+                ("💳 카드 정보 확인 중...", 15, 2),
+                ("🏦 결제 승인 요청 중...", 30, 5),
+                ("✅ 결제 승인 완료", 50, 3),
+                ("🌌 우주 재고 확인 중...", 70, 4),
+                ("📦 상품 포장 중...", 85, 5),
+                ("🚀 타임라인 배송 시작...", 100, 10),
             ]
             
-            for step, progress in steps:
+            for step, progress, delay in steps:
                 status_container.info(step)
                 progress_bar.progress(progress)
-                time.sleep(1)
+                time.sleep(delay)  # 각 단계마다 다른 시간
             
             if random.random() < 0.05:
                 status_container.error("⚠️ 일시적 오류 발생. 재시도 중...")
@@ -322,7 +348,7 @@ elif st.session_state.page == 'order':
             
             st.markdown("---")
             st.info("💌 잠시 후 텔레그램으로 영수증이 발송됩니다.")
-            st.markdown("**💡 Tip:** 이제 주문을 잊고 천천히 일상을 즐기세요. 배송은 이미 완료되었습니다.")
+            st.markdown("**💡 Tip:** 이제 주문을 잊고 천천히 일상을 즐기세요. 타임라인 배송은 이미 완료되었습니다.")
             
             order_data = {
                 "order_num": order_num,
@@ -331,7 +357,7 @@ elif st.session_state.page == 'order':
                 "state": receiver_state,
                 "price": price_display,
                 "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "status": "배송 중 🚀"
+                "status": "✨타임라인 배송 완료✨"
             }
             save_order(order_data)
             
@@ -356,20 +382,23 @@ elif st.session_state.page == 'history':
         
         for order in reversed(orders):
             with st.container():
-                col1, col2, col3 = st.columns([3, 2, 1])
-                
-                with col1:
-                    st.markdown(f"### 📦 {order['item']}")
-                    st.caption(f"주문번호: {order['order_num']}")
-                
-                with col2:
-                    st.markdown(f"**배송지:** {order['address']}")
-                    st.caption(f"주문일: {order['date']}")
-                
-                with col3:
-                    st.markdown(f"**{order['status']}**")
-                
-                st.markdown("---")
+                st.markdown(f"""
+                <div style='background: #1e1e1e; padding: 15px; border-radius: 10px; margin-bottom: 15px;'>
+                    <div style='display: flex; justify-content: space-between; align-items: center;'>
+                        <div style='flex: 2;'>
+                            <h4 style='margin: 0; font-size: 0.9rem;'>📦 {order['item']}</h4>
+                            <p style='margin: 5px 0; font-size: 0.9rem; color: #888;'>주문번호: {order['order_num']}</p>
+                        </div>
+                        <div style='flex: 1; text-align: center;'>
+                            <p style='margin: 0; font-size: 0.9rem;'><strong>배송지:</strong> {order['address']}</p>
+                            <p style='margin: 5px 0; font-size: 0.9rem; color: #888;'>주문일: {order['date']}</p>
+                        </div>
+                        <div style='flex: 0.5; text-align: right;'>
+                            <span style='font-size: 0.9rem; color: #FFD700;'>✨ 타임라인 배송 완료</span>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
 # ==========================================
 # 이용안내 페이지
