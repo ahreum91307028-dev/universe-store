@@ -129,7 +129,7 @@ st.markdown("""
 <style>
     /* 우주 배경 이미지 */
     .stApp {
-        background-image: url('https://unsplash.com/ko/%EC%82%AC%EC%A7%84/%ED%8C%8C%EB%9E%80%EC%83%89%EA%B3%BC-%EB%B3%B4%EB%9D%BC%EC%83%89-%EC%9D%80%ED%95%98-%EB%94%94%EC%A7%80%ED%84%B8-%EB%B2%BD%EC%A7%80-E0AHdsENmDg');
+        background-image: url('https://images.unsplash.com/photo-1464802686167-b939a6910659?q=80&w=1150&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -165,7 +165,7 @@ st.markdown("""
     
     /* 베스트셀러 카드 - 반투명 */
     .product-card {
-        background: rgba(102, 126, 234, 0.3);
+        background: rgba(102, 126, 234, 0.15);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.2);
         padding: 12px;
@@ -176,7 +176,7 @@ st.markdown("""
     }
     .product-card:hover {
         transform: translateY(-5px);
-        background: rgba(102, 126, 234, 0.4);
+        background: rgba(102, 126, 234, 0.25);
     }
     .product-card h3 {
         font-size: 1.1rem;
