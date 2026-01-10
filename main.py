@@ -119,17 +119,6 @@ CATALOG = {
 # ==========================================
 # CSS 스타일링
 # ==========================================
-/* 사이드바를 투명하게 */
-[data-testid="stSidebar"] {
-    background: rgba(0, 0, 0, 0.5) !important;
-    backdrop-filter: blur(10px);
-}
-
-[data-testid="stSidebar"] > div {
-    background: transparent !important;
-}
-
-
 st.set_page_config(
     page_title="Universe Store 🌌",
     page_icon="🌌",
@@ -140,7 +129,7 @@ st.markdown("""
 <style>
     /* 우주 배경 이미지 */
     .stApp {
-        background-image: url('https://unsplash.com/ko/%EC%82%AC%EC%A7%84/%ED%8C%8C%EB%9E%80%EC%83%89%EA%B3%BC-%EB%B3%B4%EB%9D%BC%EC%83%89-%EC%9D%80%ED%95%98-%EB%94%94%EC%A7%80%ED%84%B8-%EB%B2%BD%EC%A7%80-E0AHdsENmDg');
+        background-image: url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920&q=80');
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -164,6 +153,17 @@ st.markdown("""
         z-index: 1;
     }
     
+    /* 사이드바 반투명 */
+    [data-testid="stSidebar"] {
+        background: rgba(0, 0, 0, 0.5) !important;
+        backdrop-filter: blur(10px);
+    }
+    
+    [data-testid="stSidebar"] > div {
+        background: transparent !important;
+    }
+    
+    /* 베스트셀러 카드 - 반투명 */
     .product-card {
         background: rgba(102, 126, 234, 0.3);
         backdrop-filter: blur(10px);
@@ -176,6 +176,7 @@ st.markdown("""
     }
     .product-card:hover {
         transform: translateY(-5px);
+        background: rgba(102, 126, 234, 0.4);
     }
     .product-card h3 {
         font-size: 1.1rem;
@@ -191,7 +192,9 @@ st.markdown("""
         color: #FFD700;
         text-align: center;
         padding: 20px;
-        background: linear-gradient(90deg, #1a1a2e, #16213e);
+        background: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 10px;
         margin: 20px 0;
     }
@@ -315,7 +318,7 @@ elif st.session_state.page == 'order':
             for step, progress, delay in steps:
                 status_container.info(step)
                 progress_bar.progress(progress)
-                time.sleep(delay)  # 각 단계마다 다른 시간
+                time.sleep(delay)
             
             if random.random() < 0.05:
                 status_container.error("⚠️ 일시적 오류 발생. 재시도 중...")
@@ -393,30 +396,30 @@ elif st.session_state.page == 'history':
         st.markdown(f"**총 {len(orders)}개의 주문**")
         st.markdown("---")
         
-    for order in reversed(orders):
-        st.markdown(f"""
-        <div style='background: rgba(30, 30, 30, 0.5); 
-                    backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    padding: 15px; 
-                    border-radius: 10px; 
-                    margin-bottom: 15px;
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);'>
-            <div style='display: flex; justify-content: space-between; align-items: center;'>
-                <div style='flex: 2;'>
-                    <h4 style='margin: 0; font-size: 0.9rem; color: #fff;'>📦 {order['item']}</h4>
-                    <p style='margin: 5px 0; font-size: 0.9rem; color: #aaa;'>주문번호: {order['order_num']}</p>
-                </div>
-                <div style='flex: 1; text-align: center;'>
-                    <p style='margin: 0; font-size: 0.9rem; color: #fff;'><strong>배송지:</strong> {order['address']}</p>
-                    <p style='margin: 5px 0; font-size: 0.9rem; color: #aaa;'>주문일: {order['date']}</p>
-                </div>
-                <div style='flex: 0.5; text-align: right;'>
-                    <span style='font-size: 0.9rem; color: #FFD700; font-weight: bold;'>✨ 타임라인 배송 완료</span>
+        for order in reversed(orders):
+            st.markdown(f"""
+            <div style='background: rgba(30, 30, 30, 0.5); 
+                        backdrop-filter: blur(10px);
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                        padding: 15px; 
+                        border-radius: 10px; 
+                        margin-bottom: 15px;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);'>
+                <div style='display: flex; justify-content: space-between; align-items: center;'>
+                    <div style='flex: 2;'>
+                        <h4 style='margin: 0; font-size: 0.9rem; color: #fff;'>📦 {order['item']}</h4>
+                        <p style='margin: 5px 0; font-size: 0.9rem; color: #aaa;'>주문번호: {order['order_num']}</p>
                     </div>
-        </div>
-        </div>
-        """, unsafe_allow_html=True)
+                    <div style='flex: 1; text-align: center;'>
+                        <p style='margin: 0; font-size: 0.9rem; color: #fff;'><strong>배송지:</strong> {order['address']}</p>
+                        <p style='margin: 5px 0; font-size: 0.9rem; color: #aaa;'>주문일: {order['date']}</p>
+                    </div>
+                    <div style='flex: 0.5; text-align: right;'>
+                        <span style='font-size: 0.9rem; color: #FFD700; font-weight: bold;'>✨ 타임라인 배송 완료</span>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
 # ==========================================
 # 이용안내 페이지
