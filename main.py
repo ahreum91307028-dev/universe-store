@@ -408,7 +408,7 @@ elif st.session_state.page == 'history':
         for order in reversed(orders):
             # 주문 시간 계산
             order_time = datetime.strptime(order['date'], "%Y-%m-%d %H:%M:%S")
-            delivery_time = order_time + timedelta(hours=9)
+            delivery_time = order_time + timedelta(hours=15)
             current_time = datetime.now()
             
             # 배송 완료 여부 확인
