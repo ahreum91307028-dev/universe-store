@@ -416,7 +416,7 @@ elif st.session_state.page == 'order':
             
             order_num = f"UNIVERSE-{int(time.time())}"
             
-            st.snow()
+            
             st.success("✨ 주문이 우주로 전송되었습니다. 타임라인 배송이 시작되었습니다.")        
             
             st.markdown(f"""
