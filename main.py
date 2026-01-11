@@ -281,7 +281,7 @@ elif st.session_state.page == 'order':
     col1, col2 = st.columns(2)
     with col1:
         address = st.text_input("🏠 받으실 곳", 
-                               placeholder="지금의 나, 2026년의 나")
+                               placeholder=" ")
     with col2:
         receiver_state = st.selectbox("💫 현재 마음 상태", 
                                      ["이미 받은 안도감", "감사하는 마음", "이미 완료", "평온한 확신"])
