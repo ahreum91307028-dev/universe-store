@@ -119,31 +119,6 @@ CATALOG = {
 # ==========================================
 # CSS 스타일링
 # ==========================================
-
-/* 1. 기본 사이드바 */
-section[data-testid="stSidebar"] {
-    background-color: rgba(0, 0, 0, 0.5) !important;
-}
-
-section[data-testid="stSidebar"] > div {
-    background-color: transparent !important;
-}
-
-/* 2. 사이드바 내부 div */
-[data-testid="stSidebar"] > div {
-    background: transparent !important;
-}
-
-/* 3. 사이드바 네비게이션 */
-[data-testid="stSidebar"] [data-testid="stSidebarNav"] {
-    background: transparent !important;
-}
-
-/* 4. 사이드바 첫 번째 자식 */
-section[data-testid="stSidebar"] > div:first-child {
-    background: rgba(0, 0, 0, 0.5) !important;
-}
-
 st.set_page_config(
     page_title="Universe Store 🌌",
     page_icon="🌌",
@@ -179,13 +154,12 @@ st.markdown("""
     }
     
     /* 사이드바 반투명 */
-    [data-testid="stSidebar"] {
-        background: rgba(0, 0, 0, 0.5) !important;
-        backdrop-filter: blur(10px);
+    section[data-testid="stSidebar"] {
+        background-color: rgba(0, 0, 0, 0.5) !important;
     }
     
-    [data-testid="stSidebar"] > div {
-        background: transparent !important;
+    section[data-testid="stSidebar"] > div {
+        background-color: transparent !important;
     }
     
     /* 베스트셀러 카드 - 반투명 */
@@ -268,7 +242,8 @@ if st.session_state.page == 'home':
             """, unsafe_allow_html=True)
     
     st.markdown("---")
-    st.info("💡 **주문을 원하시면 '🛒 주문하기' 메뉴를 클릭하세요!**")
+    
+    st.info("💡 **주문하려면 왼쪽 사이드바에서 '🛒 주문하기' 메뉴를 선택하세요!**")
 
 # ==========================================
 # 주문 페이지
