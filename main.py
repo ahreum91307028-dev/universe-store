@@ -119,6 +119,29 @@ CATALOG = {
 # ==========================================
 # CSS 스타일링
 # ==========================================
+
+/* 1. 기본 사이드바 */
+[data-testid="stSidebar"] {
+    background: rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;  /* Safari 지원 */
+}
+
+/* 2. 사이드바 내부 div */
+[data-testid="stSidebar"] > div {
+    background: transparent !important;
+}
+
+/* 3. 사이드바 네비게이션 */
+[data-testid="stSidebar"] [data-testid="stSidebarNav"] {
+    background: transparent !important;
+}
+
+/* 4. 사이드바 첫 번째 자식 */
+section[data-testid="stSidebar"] > div:first-child {
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+
 st.set_page_config(
     page_title="Universe Store 🌌",
     page_icon="🌌",
@@ -129,7 +152,7 @@ st.markdown("""
 <style>
     /* 우주 배경 이미지 */
     .stApp {
-        background-image: url('https://images.unsplash.com/photo-1608178398319-48f814d0750c?q=80&w=879&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+        background-image: url('https://images.unsplash.com/photo-1465101162946-4377e57745c3?q=80&w=1178&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
