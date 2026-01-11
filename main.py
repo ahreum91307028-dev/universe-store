@@ -61,6 +61,56 @@ def send_telegram_msg(item, address, cost, order_num):
         pass
 
 # ==========================================
+# 배송 알림 시스템
+# ==========================================
+def send_delivery_notification(order_num, item, stage):
+    """배송 단계별 알림 발송"""
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    
+    messages = {
+        "order_received": f"""
+🎊 **주문 접수 완료**
+━━━━━━━━━━━━━━━━━━━━━
+📦 주문번호: {order_num}
+🛍️ 상품: {item}
+✅ 주문이 접수되었습니다.
+🚀 곧 우주 배송이 시작됩니다!
+━━━━━━━━━━━━━━━━━━━━━
+💌 Universe Store
+        """,
+        
+        "shipping_started": f"""
+🚀 **배송 시작**
+━━━━━━━━━━━━━━━━━━━━━
+📦 주문번호: {order_num}
+🛍️ 상품: {item}
+🌌 우주 창고에서 출발했습니다!
+⏰ 3시간 후 타임라인 도착 예정
+━━━━━━━━━━━━━━━━━━━━━
+💌 Universe Store
+        """,
+        
+        "delivery_complete": f"""
+✨ **배송 완료**
+━━━━━━━━━━━━━━━━━━━━━
+📦 주문번호: {order_num}
+🛍️ 상품: {item}
+🎉 타임라인 배송이 완료되었습니다!
+💫 이미 당신의 것입니다.
+━━━━━━━━━━━━━━━━━━━━━
+💌 Universe Store
+        """
+    }
+    
+    message = messages.get(stage, "")
+    data = {"chat_id": CHAT_ID, "text": message, "parse_mode": "Markdown"}
+    
+    try:
+        requests.post(url, data=data)
+    except:
+        pass
+
+# ==========================================
 # 인기 상품 카탈로그
 # ==========================================
 CATALOG = {
@@ -217,18 +267,39 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
+# 장바구니 초기화
+# ==========================================
+if 'cart' not in st.session_state:
+    st.session_state.cart = []
+
+def add_to_cart(product_name, price):
+    st.session_state.cart.append({
+        'product': product_name,
+        'price': price,
+        'date_added': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    })
+
+def remove_from_cart(index):
+    st.session_state.cart.pop(index)
+
+def clear_cart():
+    st.session_state.cart = []
+
+# ==========================================
 # 페이지 네비게이션
 # ==========================================
 if 'page' not in st.session_state:
     st.session_state.page = 'home'
 
 st.sidebar.title("🌌 Universe Store")
-menu = st.sidebar.radio("메뉴", ["🏠 홈", "🛒 주문하기", "📦 주문내역", "ℹ️ 이용안내"])
+menu = st.sidebar.radio("메뉴", ["🏠 홈", "🛒 주문하기", "🛍️ 장바구니", "📦 주문내역", "ℹ️ 이용안내"])
 
 if menu == "🏠 홈":
     st.session_state.page = 'home'
 elif menu == "🛒 주문하기":
     st.session_state.page = 'order'
+elif menu == "🛍️ 장바구니":
+    st.session_state.page = 'cart'
 elif menu == "📦 주문내역":
     st.session_state.page = 'history'
 elif menu == "ℹ️ 이용안내":
@@ -256,6 +327,10 @@ if st.session_state.page == 'home':
                 <p><strong>💳 Price:</strong> {info['price']}</p>
             </div>
             """, unsafe_allow_html=True)
+            
+            if st.button(f"🛒 장바구니 담기", key=f"cart_{idx}"):
+                add_to_cart(product, info['price'])
+                st.success(f"✅ 장바구니에 추가되었습니다!")
     
     st.markdown("---")
     
@@ -341,8 +416,8 @@ elif st.session_state.page == 'order':
             
             order_num = f"UNIVERSE-{int(time.time())}"
             
-            st.balloons()
-            st.success("🎉 주문이 성공적으로 완료되었습니다!")
+            st.snow()
+            st.success("✨ 주문이 우주로 전송되었습니다. 타임라인 배송이 시작되었습니다.")        
             
             st.markdown(f"""
             <div class="order-number">
@@ -391,10 +466,58 @@ elif st.session_state.page == 'order':
             }
             save_order(order_data)
             
+            # 배송 알림 발송
+            send_delivery_notification(order_num, desired_item, "order_received")
+            time.sleep(1)
+            send_delivery_notification(order_num, desired_item, "shipping_started")
+            
             try:
                 send_telegram_msg(desired_item, address, price_display, order_num)
             except Exception as e:
                 st.warning(f"텔레그램 전송 오류: {e}")
+
+# ==========================================
+# 장바구니 페이지
+# ==========================================
+elif st.session_state.page == 'cart':
+    st.title("🛍️ 장바구니")
+    
+    if not st.session_state.cart:
+        st.info("장바구니가 비어 있습니다. 상품을 담아주세요! 🛒")
+    else:
+        st.markdown(f"**장바구니 상품: {len(st.session_state.cart)}개**")
+        st.markdown("---")
+        
+        for idx, item in enumerate(st.session_state.cart):
+            col1, col2, col3 = st.columns([3, 2, 1])
+            
+            with col1:
+                st.markdown(f"### {item['product']}")
+                st.caption(f"담은 시간: {item['date_added']}")
+            
+            with col2:
+                st.markdown(f"**가격:** {item['price']}")
+            
+            with col3:
+                if st.button("🗑️ 삭제", key=f"remove_{idx}"):
+                    remove_from_cart(idx)
+                    st.rerun()
+            
+            st.markdown("---")
+        
+        st.markdown("### 💰 총 금액")
+        st.info("우주 배송은 무료입니다! ✨")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🗑️ 장바구니 비우기", use_container_width=True):
+                clear_cart()
+                st.rerun()
+        
+        with col2:
+            if st.button("🎊 전체 주문하기", type="primary", use_container_width=True):
+                st.session_state.page = 'order'
+                st.rerun()
 
 # ==========================================
 # 주문 내역 페이지
@@ -410,7 +533,7 @@ elif st.session_state.page == 'history':
         st.markdown(f"**총 {len(orders)}개의 주문**")
         st.markdown("---")
         
-        for order in reversed(orders):
+        for idx, order in enumerate(reversed(orders)):
             # 주문 시간 계산
             order_time = datetime.strptime(order['date'], "%Y-%m-%d %H:%M:%S")
             delivery_time = order_time + timedelta(hours=3)
@@ -420,33 +543,60 @@ elif st.session_state.page == 'history':
             if current_time >= delivery_time:
                 status_text = f"✨ 타임라인 배송 완료 ({delivery_time.strftime('%Y-%m-%d %H:%M')})"
                 status_color = "#FFD700"
+                progress = 100
             else:
                 status_text = "🚀 배송 중"
                 status_color = "#00D9FF"
+                elapsed = (current_time - order_time).total_seconds()
+                total = (delivery_time - order_time).total_seconds()
+                progress = int((elapsed / total) * 100)
             
-            st.markdown(f"""
-            <div style='background: rgba(30, 30, 30, 0.5); 
-                        backdrop-filter: blur(10px);
-                        border: 1px solid rgba(255, 255, 255, 0.2);
-                        padding: 15px; 
-                        border-radius: 10px; 
-                        margin-bottom: 15px;
-                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);'>
-                <div style='display: flex; justify-content: space-between; align-items: center;'>
-                    <div style='flex: 2;'>
-                        <h4 style='margin: 0; font-size: 0.9rem; color: #fff;'>📦 {order['item']}</h4>
-                        <p style='margin: 5px 0; font-size: 0.9rem; color: #aaa;'>주문번호: {order['order_num']}</p>
-                    </div>
-                    <div style='flex: 1; text-align: center;'>
-                        <p style='margin: 0; font-size: 0.9rem; color: #fff;'><strong>배송지:</strong> {order['address']}</p>
-                        <p style='margin: 5px 0; font-size: 0.9rem; color: #aaa;'>주문일: {order['date']}</p>
-                    </div>
-                    <div style='flex: 0.8; text-align: right;'>
-                        <span style='font-size: 0.9rem; color: {status_color}; font-weight: bold;'>{status_text}</span>
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            # 주문 상세 페이지 (expander)
+            with st.expander(f"📦 {order['item']} - {status_text}", expanded=False):
+                st.markdown(f"""
+                ### 📋 주문 상세 정보
+                
+                **주문번호:** {order['order_num']}  
+                **상품명:** {order['item']}  
+                **배송지:** {order['address']}  
+                **마음 상태:** {order['state']}  
+                **결제 금액:** {order['price']}  
+                **주문일:** {order['date']}  
+                
+                ---
+                
+                ### 🚀 배송 진행 상황
+                """)
+                
+                # 배송 단계 진행바
+                st.progress(progress)
+                
+                # 배송 단계
+                delivery_stages = [
+                    ("✅ 주문 접수 완료", True),
+                    ("✅ 우주 창고 출발", progress >= 20),
+                    ("✅ 양자 터널 통과", progress >= 40),
+                    ("✅ 현실화 프로세스", progress >= 60),
+                    ("✅ 타임라인 배송 완료", progress >= 100)
+                ]
+                
+                for stage, completed in delivery_stages:
+                    if completed:
+                        st.success(stage)
+                    else:
+                        st.info(stage)
+                
+                if progress < 100:
+                    remaining_time = delivery_time - current_time
+                    hours = int(remaining_time.total_seconds() // 3600)
+                    minutes = int((remaining_time.total_seconds() % 3600) // 60)
+                    st.warning(f"⏰ 예상 배송 완료까지: {hours}시간 {minutes}분")
+                else:
+                    st.success("🎉 배송이 완료되었습니다!")
+                    
+                    if st.button("📨 배송 완료 알림 받기", key=f"notify_{idx}"):
+                        send_delivery_notification(order['order_num'], order['item'], "delivery_complete")
+                        st.success("✅ 알림이 발송되었습니다!")
 
 # ==========================================
 # 이용안내 페이지
