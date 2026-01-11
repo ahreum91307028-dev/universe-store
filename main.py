@@ -305,7 +305,7 @@ elif st.session_state.page == 'order':
         with col2:
             cvv = st.text_input("CVV", type="password", placeholder="***", max_chars=3)
     
-    price_display = CATALOG[selected_product]['price'] if "직접 입력" not in selected_product else "이미 완료"
+    price_display = CATALOG[selected_product]['price']
     st.info(f"💰 **결제 금액:** {price_display}")
     
     st.warning("⚠️ 이 주문은 취소할 수 없으며, 우주 법칙에 따라 반드시 배송됩니다.")
