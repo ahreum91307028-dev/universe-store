@@ -40,7 +40,7 @@ def send_telegram_msg(item, address, cost, order_num):
 📦 **상품명:** {item}
 🏷️ **주문번호:** {order_num}
 🏠 **배송지:** {address}
-💳 **결제수단:** Universe Card (nh카드)
+💳 **결제수단:** KB국민카드(간편결제)
 💰 **결제금액:** {cost}
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ **결제완료**
@@ -127,7 +127,7 @@ CATALOG = {
     
     "🎯 직접 입력": {
         "desc": "원하는 것을 직접 주문하세요",
-        "price": "1,000,000",
+        "price": "10,000,000",
         "emoji": "🎯"
     }
 }
@@ -276,7 +276,7 @@ elif st.session_state.page == 'order':
     
     if "직접 입력" in selected_product:
         desired_item = st.text_input("🎯 원하는 것을 구체적으로 입력하세요", 
-                                     placeholder="예: 사랑과 감사")
+                                     placeholder=" ")
     else:
         desired_item = selected_product
     
@@ -295,7 +295,7 @@ elif st.session_state.page == 'order':
     
     st.subheader("3️⃣ 결제 정보")
     payment_method = st.selectbox("💳 결제 수단", 
-                                  ["Universe Card (NH농협은행)", "포인트", "자동이체"])
+                                  ["KB국민카드(간편결제)", "포인트", "자동이체"])
     
     with st.expander("💳 카드 정보 입력 (보안 연결됨 🔒)"):
         card_num = st.text_input("카드 번호", placeholder="1234-5678-9012-3456", max_chars=19)
@@ -413,7 +413,7 @@ elif st.session_state.page == 'history':
         for order in reversed(orders):
             # 주문 시간 계산
             order_time = datetime.strptime(order['date'], "%Y-%m-%d %H:%M:%S")
-            delivery_time = order_time + timedelta(hours=15)
+            delivery_time = order_time + timedelta(hours=3)
             current_time = datetime.now()
             
             # 배송 완료 여부 확인
