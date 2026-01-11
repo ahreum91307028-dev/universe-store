@@ -129,7 +129,7 @@ st.markdown("""
 <style>
     /* 우주 배경 이미지 */
     .stApp {
-        background-image: url('https://images.unsplash.com/photo-1464802686167-b939a6910659?q=80&w=1150&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+        background-image: url('https://images.unsplash.com/photo-1608178398319-48f814d0750c?q=80&w=879&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -243,9 +243,7 @@ if st.session_state.page == 'home':
             """, unsafe_allow_html=True)
     
     st.markdown("---")
-    if st.button("🛒 지금 주문하기", type="primary", use_container_width=True):
-        st.session_state.page = 'order'
-        st.experimental_rerun()
+    st.info("💡 **주문을 원하시면 '🛒 주문하기' 메뉴를 클릭하세요!**")
 
 # ==========================================
 # 주문 페이지
