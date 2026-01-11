@@ -3,7 +3,7 @@ import time
 import requests
 import random
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 
 # ==========================================
@@ -382,7 +382,7 @@ elif st.session_state.page == 'order':
                 "state": receiver_state,
                 "price": price_display,
                 "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "status": "배송 중 🚀"  # 초기 상태
+                "status": "배송 중 🚀"
             }
             save_order(order_data)
             
@@ -405,43 +405,43 @@ elif st.session_state.page == 'history':
         st.markdown(f"**총 {len(orders)}개의 주문**")
         st.markdown("---")
         
-for order in reversed(orders):
-    # 주문 시간 계산
-    order_time = datetime.strptime(order['date'], "%Y-%m-%d %H:%M:%S")
-    delivery_time = order_time + timedelta(hours=9)
-    current_time = datetime.now()
-    
-    # 배송 완료 여부 확인
-    if current_time >= delivery_time:
-        status_text = f"✨ 타임라인 배송 완료 ({delivery_time.strftime('%Y-%m-%d %H:%M')})"
-        status_color = "#FFD700"
-    else:
-        status_text = "🚀 배송 중"
-        status_color = "#00D9FF"
-    
-    st.markdown(f"""
-    <div style='background: rgba(30, 30, 30, 0.5); 
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                padding: 15px; 
-                border-radius: 10px; 
-                margin-bottom: 15px;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);'>
-        <div style='display: flex; justify-content: space-between; align-items: center;'>
-            <div style='flex: 2;'>
-                <h4 style='margin: 0; font-size: 0.9rem; color: #fff;'>📦 {order['item']}</h4>
-                <p style='margin: 5px 0; font-size: 0.9rem; color: #aaa;'>주문번호: {order['order_num']}</p>
+        for order in reversed(orders):
+            # 주문 시간 계산
+            order_time = datetime.strptime(order['date'], "%Y-%m-%d %H:%M:%S")
+            delivery_time = order_time + timedelta(hours=9)
+            current_time = datetime.now()
+            
+            # 배송 완료 여부 확인
+            if current_time >= delivery_time:
+                status_text = f"✨ 타임라인 배송 완료 ({delivery_time.strftime('%Y-%m-%d %H:%M')})"
+                status_color = "#FFD700"
+            else:
+                status_text = "🚀 배송 중"
+                status_color = "#00D9FF"
+            
+            st.markdown(f"""
+            <div style='background: rgba(30, 30, 30, 0.5); 
+                        backdrop-filter: blur(10px);
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                        padding: 15px; 
+                        border-radius: 10px; 
+                        margin-bottom: 15px;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);'>
+                <div style='display: flex; justify-content: space-between; align-items: center;'>
+                    <div style='flex: 2;'>
+                        <h4 style='margin: 0; font-size: 0.9rem; color: #fff;'>📦 {order['item']}</h4>
+                        <p style='margin: 5px 0; font-size: 0.9rem; color: #aaa;'>주문번호: {order['order_num']}</p>
+                    </div>
+                    <div style='flex: 1; text-align: center;'>
+                        <p style='margin: 0; font-size: 0.9rem; color: #fff;'><strong>배송지:</strong> {order['address']}</p>
+                        <p style='margin: 5px 0; font-size: 0.9rem; color: #aaa;'>주문일: {order['date']}</p>
+                    </div>
+                    <div style='flex: 0.8; text-align: right;'>
+                        <span style='font-size: 0.9rem; color: {status_color}; font-weight: bold;'>{status_text}</span>
+                    </div>
+                </div>
             </div>
-            <div style='flex: 1; text-align: center;'>
-                <p style='margin: 0; font-size: 0.9rem; color: #fff;'><strong>배송지:</strong> {order['address']}</p>
-                <p style='margin: 5px 0; font-size: 0.9rem; color: #aaa;'>주문일: {order['date']}</p>
-            </div>
-            <div style='flex: 0.8; text-align: right;'>
-                <span style='font-size: 0.9rem; color: {status_color}; font-weight: bold;'>{status_text}</span>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
 
 # ==========================================
 # 이용안내 페이지
