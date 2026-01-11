@@ -155,7 +155,7 @@ st.markdown("""
     
     /* 사이드바 반투명 */
     section[data-testid="stSidebar"] {
-        background-color: rgba(0, 0, 0, 0.5) !important;
+        background-color: rgba(0, 0, 0, 0.3) !important;
     }
     
     section[data-testid="stSidebar"] > div {
