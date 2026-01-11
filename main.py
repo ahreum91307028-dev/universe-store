@@ -121,10 +121,12 @@ CATALOG = {
 # ==========================================
 
 /* 1. 기본 사이드바 */
-[data-testid="stSidebar"] {
-    background: rgba(0, 0, 0, 0.5) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;  /* Safari 지원 */
+section[data-testid="stSidebar"] {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+section[data-testid="stSidebar"] > div {
+    background-color: transparent !important;
 }
 
 /* 2. 사이드바 내부 div */
