@@ -359,12 +359,12 @@ elif st.session_state.page == 'order':
     st.subheader("1️⃣ 상품 선택")
     
     # 홈에서 선택된 상품이 있으면 자동 설정
-    if st.session_state.selected_product:
+    if st.session_state.selected_product and st.session_state.selected_product in list(CATALOG.keys()):
         default_index = list(CATALOG.keys()).index(st.session_state.selected_product)
         st.session_state.selected_product = None
     else:
         default_index = 0
-    
+
     selected_product = st.selectbox(
         "원하는 상품을 선택하세요",
         list(CATALOG.keys()),
