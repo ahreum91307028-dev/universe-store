@@ -391,7 +391,7 @@ elif st.session_state.page == 'order':
 
 
     if st.button("🎊 최종 주문하기", type="primary", disabled=not agree, use_container_width=True):
-    if not desired_item or not address:
+        if not desired_item or not address:
         st.error("❌ 상품명과 배송지를 모두 입력해주세요!")
     else:
         steps = [
