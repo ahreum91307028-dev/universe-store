@@ -31,7 +31,7 @@ def save_order(order):
 # ==========================================
 # 텔레그램 발송
 # ==========================================
-def send_telegram_msg(item, address, cost, order_num):
+def send_telegram_msg(item, address, delivery_request, cost, order_num):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     
     message = f"""
@@ -40,6 +40,7 @@ def send_telegram_msg(item, address, cost, order_num):
 📦 **상품명:** {item}
 🏷️ **주문번호:** {order_num}
 🏠 **배송지:** {address}
+📝 **배송요청사항:** {delivery_request}
 💳 **결제수단:** KB국민카드(간편결제)
 💰 **결제금액:** {cost}
 ━━━━━━━━━━━━━━━
@@ -276,9 +277,6 @@ st.markdown("""
 if 'cart' not in st.session_state:
     st.session_state.cart = []
 
-if 'selected_product' not in st.session_state:
-    st.session_state.selected_product = None
-
 def add_to_cart(product_name, price):
     st.session_state.cart.append({
         'product': product_name,
@@ -291,11 +289,6 @@ def remove_from_cart(index):
 
 def clear_cart():
     st.session_state.cart = []
-
-def select_product_and_order(product_name):
-    """상품 선택하고 주문 페이지로 이동"""
-    st.session_state.selected_product = product_name
-    st.session_state.page = 'order'
 
 # ==========================================
 # 페이지 네비게이션
@@ -317,7 +310,6 @@ elif menu == "📦 주문내역":
 elif menu == "ℹ️ 이용안내":
     st.session_state.page = 'info'
 
-
 # ==========================================
 # 홈 페이지
 # ==========================================
@@ -335,28 +327,19 @@ if st.session_state.page == 'home':
         with cols[idx % 3]:
             st.markdown(f"""
             <div class="product-card">
-                <h3>{info['emoji']} {product.replace(info['emoji'], '').strip()}</h3>
+                <h3>{info['emoji']} {product}</h3>
                 <p>{info['desc']}</p>
                 <p><strong>💳 Price:</strong> {info['price']}</p>
             </div>
             """, unsafe_allow_html=True)
             
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button(f"🛒 담기", key=f"cart_{idx}", use_container_width=True):
-                    add_to_cart(product, info['price'])
-                    st.success(f"✅ 장바구니 추가!")
-            
-            with col2:
-                if st.button(f"📦 주문", key=f"order_{idx}", use_container_width=True):
-                    st.session_state.selected_product = product
-                    st.session_state.page = 'order'
+            if st.button(f"🛒 장바구니 담기", key=f"cart_{idx}", use_container_width=True):
+                add_to_cart(product, info['price'])
+                st.success(f"✅ 장바구니에 추가되었습니다!")
     
     st.markdown("---")
     
     st.info("💡 **주문하려면 왼쪽 사이드바에서 '🛒 주문하기' 메뉴를 선택하세요!**")
-
-
 
 # ==========================================
 # 주문 페이지
@@ -365,18 +348,9 @@ elif st.session_state.page == 'order':
     st.title("🛒 주문하기")
     
     st.subheader("1️⃣ 상품 선택")
-    
-    # 홈에서 선택된 상품이 있으면 자동 설정
-    if st.session_state.selected_product and st.session_state.selected_product in list(CATALOG.keys()):
-        default_index = list(CATALOG.keys()).index(st.session_state.selected_product)
-        st.session_state.selected_product = None
-    else:
-        default_index = 0
-
     selected_product = st.selectbox(
         "원하는 상품을 선택하세요",
         list(CATALOG.keys()),
-        index=default_index,
         format_func=lambda x: f"{CATALOG[x]['emoji']} {x}"
     )
     
@@ -389,13 +363,14 @@ elif st.session_state.page == 'order':
     st.markdown("---")
     
     st.subheader("2️⃣ 배송 정보")
-    col1, col2 = st.columns(2)
-    with col1:
-        address = st.text_input("🏠 받으실 곳", 
-                               placeholder=" ")
-    with col2:
-        receiver_state = st.selectbox("💫 현재 마음 상태", 
-                                     ["이미 받은 안도감", "감사하는 마음", "이미 완료", "평온한 확신"])
+    address = st.text_input("🏠 받으실 곳", 
+                           placeholder=" ")
+    
+    delivery_request = st.text_input("📝 배송요청사항", 
+                                    placeholder="예: 문앞에 놓아주세요")
+    
+    receiver_state = st.selectbox("💫 현재 마음 상태", 
+                                 ["이미 받은 안도감", "감사하는 마음", "이미 완료", "평온한 확신"])
     
     st.markdown("---")
     
@@ -455,6 +430,7 @@ elif st.session_state.page == 'order':
             ### ✅ 주문 완료
             - **상품:** {desired_item}
             - **배송지:** {address}
+            - **배송요청사항:** {delivery_request if delivery_request else "없음"}
             - **마음 상태:** {receiver_state}
             - **결제 수단:** {payment_method}
             - **결제 금액:** {price_display}
@@ -485,6 +461,7 @@ elif st.session_state.page == 'order':
                 "order_num": order_num,
                 "item": desired_item,
                 "address": address,
+                "delivery_request": delivery_request if delivery_request else "없음",
                 "state": receiver_state,
                 "price": price_display,
                 "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -498,7 +475,7 @@ elif st.session_state.page == 'order':
             send_delivery_notification(order_num, desired_item, "shipping_started")
             
             try:
-                send_telegram_msg(desired_item, address, price_display, order_num)
+                send_telegram_msg(desired_item, address, delivery_request if delivery_request else "없음", price_display, order_num)
             except Exception as e:
                 st.warning(f"텔레그램 전송 오류: {e}")
 
@@ -585,6 +562,7 @@ elif st.session_state.page == 'history':
                 **주문번호:** {order['order_num']}  
                 **상품명:** {order['item']}  
                 **배송지:** {order['address']}  
+                **배송요청사항:** {order.get('delivery_request', '없음')}  
                 **마음 상태:** {order['state']}  
                 **결제 금액:** {order['price']}  
                 **주문일:** {order['date']}  
