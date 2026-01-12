@@ -317,6 +317,7 @@ elif menu == "📦 주문내역":
 elif menu == "ℹ️ 이용안내":
     st.session_state.page = 'info'
 
+
 # ==========================================
 # 홈 페이지
 # ==========================================
@@ -327,7 +328,7 @@ if st.session_state.page == 'home':
     st.info("💫 **오늘의 특가:** 모든 상품 우주 무료배송 | 🎁 첫 주문 고객 특별 선물")
     
     st.markdown("---")
-    st.subheader("🔥 베스트셀러 Top 14")
+    st.subheader("🔥 베스트셀러 Top 13")
     
     cols = st.columns(3)
     for idx, (product, info) in enumerate(list(CATALOG.items())[:13]):
@@ -348,12 +349,14 @@ if st.session_state.page == 'home':
             
             with col2:
                 if st.button(f"📦 주문", key=f"order_{idx}", use_container_width=True):
-                    select_product_and_order(product)
-                    st.experimental_rerun()
+                    st.session_state.selected_product = product
+                    st.session_state.page = 'order'
     
     st.markdown("---")
     
     st.info("💡 **주문하려면 왼쪽 사이드바에서 '🛒 주문하기' 메뉴를 선택하세요!**")
+
+
 
 # ==========================================
 # 주문 페이지
