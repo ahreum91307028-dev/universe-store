@@ -367,7 +367,7 @@ elif st.session_state.page == 'order':
                            placeholder=" ")
     
     delivery_request = st.text_input("📝 배송요청사항", 
-                                    placeholder="예: 문앞에 놓아주세요")
+                                    placeholder=" ")
     
     receiver_state = st.selectbox("💫 현재 마음 상태", 
                                  ["이미 받은 안도감", "감사하는 마음", "이미 완료", "평온한 확신"])
