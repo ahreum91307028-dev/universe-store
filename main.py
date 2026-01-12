@@ -344,7 +344,7 @@ if st.session_state.page == 'home':
             with col2:
                 if st.button(f"📦 주문", key=f"order_{idx}", use_container_width=True):
                     select_product_and_order(product)
-                    st.rerun()
+                    st.experimental_rerun()
     
     st.markdown("---")
     
