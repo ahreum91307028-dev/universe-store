@@ -387,35 +387,29 @@ elif st.session_state.page == 'order':
     st.markdown("---")
     agree = st.checkbox("위 내용을 확인했으며, 우주의 배송을 신뢰합니다 ✨")
     
-
-
-
     if st.button("🎊 최종 주문하기", type="primary", disabled=not agree, use_container_width=True):
         if not desired_item or not address:
-        st.error("❌ 상품명과 배송지를 모두 입력해주세요!")
-    else:
-        steps = [
-            ("💳 카드 정보 확인 중...", 2),
-            ("🏦 결제 승인 요청 중...", 5),
-            ("✅ 결제 승인 완료", 3),
-            ("🌌 우주 재고 확인 중...", 4),
-            ("📦 상품 포장 중...", 5),
-            ("🚀 타임라인 배송 시작...", 10),
-        ]
-        
-        for step, delay in steps:
-            with st.spinner(step):
-                time.sleep(delay)
-
-
-
+            st.error("❌ 상품명과 배송지를 모두 입력해주세요!")
+        else:
+            steps = [
+                ("💳 카드 정보 확인 중...", 2),
+                ("🏦 결제 승인 요청 중...", 5),
+                ("✅ 결제 승인 완료", 3),
+                ("🌌 우주 재고 확인 중...", 4),
+                ("📦 상품 포장 중...", 5),
+                ("🚀 타임라인 배송 시작...", 10),
+            ]
+            
+            for step, delay in steps:
+                with st.spinner(step):
+                    time.sleep(delay)
+            
             if random.random() < 0.05:
-                status_container.error("⚠️ 일시적 오류 발생. 재시도 중...")
-                time.sleep(2)
-                status_container.success("✅ 재시도 성공!")
+                with st.spinner("⚠️ 일시적 오류 발생. 재시도 중..."):
+                    time.sleep(2)
+                st.success("✅ 재시도 성공!")
             
             order_num = f"UNIVERSE-{int(time.time())}"
-            
             
             st.success("✨ 주문이 우주로 전송되었습니다. 타임라인 배송이 시작되었습니다.")        
             
@@ -475,6 +469,8 @@ elif st.session_state.page == 'order':
                 send_telegram_msg(desired_item, address, price_display, order_num)
             except Exception as e:
                 st.warning(f"텔레그램 전송 오류: {e}")
+
+
 
 # ==========================================
 # 장바구니 페이지
