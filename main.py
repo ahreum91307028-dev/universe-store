@@ -271,6 +271,9 @@ st.markdown("""
 if 'cart' not in st.session_state:
     st.session_state.cart = []
 
+if 'selected_product' not in st.session_state:
+    st.session_state.selected_product = None
+
 def add_to_cart(product_name, price):
     st.session_state.cart.append({
         'product': product_name,
@@ -283,6 +286,11 @@ def remove_from_cart(index):
 
 def clear_cart():
     st.session_state.cart = []
+
+def select_product_and_order(product_name):
+    """상품 선택하고 주문 페이지로 이동"""
+    st.session_state.selected_product = product_name
+    st.session_state.page = 'order'
 
 # ==========================================
 # 페이지 네비게이션
@@ -327,9 +335,16 @@ if st.session_state.page == 'home':
             </div>
             """, unsafe_allow_html=True)
             
-            if st.button(f"🛒 장바구니 담기", key=f"cart_{idx}"):
-                add_to_cart(product, info['price'])
-                st.success(f"✅ 장바구니에 추가되었습니다!")
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button(f"🛒 담기", key=f"cart_{idx}", use_container_width=True):
+                    add_to_cart(product, info['price'])
+                    st.success(f"✅ 장바구니 추가!")
+            
+            with col2:
+                if st.button(f"📦 주문", key=f"order_{idx}", use_container_width=True):
+                    select_product_and_order(product)
+                    st.rerun()
     
     st.markdown("---")
     
@@ -342,9 +357,18 @@ elif st.session_state.page == 'order':
     st.title("🛒 주문하기")
     
     st.subheader("1️⃣ 상품 선택")
+    
+    # 홈에서 선택된 상품이 있으면 자동 설정
+    if st.session_state.selected_product:
+        default_index = list(CATALOG.keys()).index(st.session_state.selected_product)
+        st.session_state.selected_product = None
+    else:
+        default_index = 0
+    
     selected_product = st.selectbox(
         "원하는 상품을 선택하세요",
         list(CATALOG.keys()),
+        index=default_index,
         format_func=lambda x: f"{CATALOG[x]['emoji']} {x}"
     )
     
@@ -469,8 +493,6 @@ elif st.session_state.page == 'order':
                 send_telegram_msg(desired_item, address, price_display, order_num)
             except Exception as e:
                 st.warning(f"텔레그램 전송 오류: {e}")
-
-
 
 # ==========================================
 # 장바구니 페이지
