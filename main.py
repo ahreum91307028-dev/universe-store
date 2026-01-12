@@ -328,10 +328,10 @@ if st.session_state.page == 'home':
     st.info("💫 **오늘의 특가:** 모든 상품 우주 무료배송 | 🎁 첫 주문 고객 특별 선물")
     
     st.markdown("---")
-    st.subheader("🔥 베스트셀러 Top 13")
+    st.subheader("🔥 베스트셀러 Top 14")
     
     cols = st.columns(3)
-    for idx, (product, info) in enumerate(list(CATALOG.items())[:13]):
+    for idx, (product, info) in enumerate(list(CATALOG.items())[:14]):
         with cols[idx % 3]:
             st.markdown(f"""
             <div class="product-card">
