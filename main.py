@@ -387,15 +387,15 @@ elif st.session_state.page == 'order':
     st.markdown("---")
     agree = st.checkbox("위 내용을 확인했으며, 우주의 배송을 신뢰합니다 ✨")
     
-    if st.button("🎊 최종 주문하기", type="primary", disabled=not agree, use_container_width=True):
+    if st.button("🎊 주문하기", type="primary", disabled=not agree, use_container_width=True):
         if not desired_item or not address:
             st.error("❌ 상품명과 배송지를 모두 입력해주세요!")
         else:
             steps = [
-                ("💳 카드 정보 확인 중...", 2),
+                ("💳 카드 정보 확인 중...", 5),
                 ("🏦 결제 승인 요청 중...", 5),
                 ("✅ 결제 승인 완료", 3),
-                ("🌌 우주 재고 확인 중...", 4),
+                ("🌌 우주 재고 확인 중...", 10),
                 ("📦 상품 포장 중...", 5),
                 ("🚀 타임라인 배송 시작...", 10),
             ]
@@ -425,7 +425,7 @@ elif st.session_state.page == 'order':
             - **배송지:** {address}
             - **마음 상태:** {receiver_state}
             - **결제 수단:** {payment_method}
-            
+            - **결제 금액:** {price_display}
             ---
             
             ### 🚀 배송 진행 상황
